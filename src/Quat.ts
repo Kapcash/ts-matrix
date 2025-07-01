@@ -2,117 +2,156 @@ import { EPSILON } from './constants';
 import Vector from './Vector';
 
 /**
- * Class representing a Math Quat
- *
- * TODO: To refactor with 'Matrix.ts' style.
+ * Class representing a Quaternion for 3D rotations
  */
 export default class Quat {
 
-    get x(): number {
-        return this.values[0];
-    }
-
-    set x(value: number) {
-        this.values[0] = value;
-    }
-
-    get y(): number {
-        return this.values[1];
-    }
-
-    set y(value: number) {
-        this.values[1] = value;
-    }
-
-    get z(): number {
-        return this.values[2];
-    }
-
-    set z(value: number) {
-        this.values[2] = value;
-    }
-    
-    get w(): number {
-        return this.values[3];
-    }
-    
-    set w(value: number) {
-        this.values[3] = value;
-    }
-
-    get xy(): [number, number] {
-        return [
-            this.values[0],
-            this.values[1],
-        ];
-    }
-
-    set xy(values: [number, number]) {
-        this.values[0] = values[0];
-        this.values[1] = values[1];
-    }
-
-
-    get xyz(): [number, number, number] {
-        return [
-            this.values[0],
-            this.values[1],
-            this.values[2],
-        ];
-    }
-
-    set xyz(values: [number, number, number]) {
-        this.values[0] = values[0];
-        this.values[1] = values[1];
-        this.values[2] = values[2];
-    }
-
-    get xyzw(): [number, number, number, number] {
-        return [
-            this.values[0],
-            this.values[1],
-            this.values[2],
-            this.values[3],
-        ];
-    }
-
-    set xyzw(values: [number, number, number, number]) {
-        this.values[0] = values[0];
-        this.values[1] = values[1];
-        this.values[2] = values[2];
-        this.values[3] = values[3];
-    }
+    /** Values of the quaternion as [x, y, z, w] */
+    private _values: number[];
 
     constructor(values?: [number, number, number, number]) {
-        if (values !== undefined) {
+        // Create quaternion with identity by default [0, 0, 0, 1]
+        this._values = [0, 0, 0, 1];
+
+        if (values) {
             this.xyzw = values;
         }
     }
 
-    private values = new Float32Array(4);
-
-    static readonly identity = new Quat().setIdentity();
-
-    at(index: number): number {
-        return this.values[index];
+    get values(): number[] {
+        return this._values;
     }
 
-    reset(): void {
-        for (let i = 0; i < 4; i++) {
-            this.values[i] = 0;
+    /**
+     * Set values into the quaternion.
+     * @param newValues Array of new values [x, y, z, w].
+     */
+    set values(newValues: number[]) {
+        const minSize = Math.min(4, newValues.length);
+        for (let i = 0; i < minSize; i++) {
+            this._values[i] = newValues[i];
         }
     }
 
+    get x(): number {
+        return this._values[0];
+    }
+
+    set x(value: number) {
+        this._values[0] = value;
+    }
+
+    get y(): number {
+        return this._values[1];
+    }
+
+    set y(value: number) {
+        this._values[1] = value;
+    }
+
+    get z(): number {
+        return this._values[2];
+    }
+
+    set z(value: number) {
+        this._values[2] = value;
+    }
+    
+    get w(): number {
+        return this._values[3];
+    }
+    
+    set w(value: number) {
+        this._values[3] = value;
+    }
+
+    get xy(): [number, number] {
+        return [
+            this._values[0],
+            this._values[1],
+        ];
+    }
+
+    set xy(values: [number, number]) {
+        this._values[0] = values[0];
+        this._values[1] = values[1];
+    }
+
+    get xyz(): [number, number, number] {
+        return [
+            this._values[0],
+            this._values[1],
+            this._values[2],
+        ];
+    }
+
+    set xyz(values: [number, number, number]) {
+        this._values[0] = values[0];
+        this._values[1] = values[1];
+        this._values[2] = values[2];
+    }
+
+    get xyzw(): [number, number, number, number] {
+        return [
+            this._values[0],
+            this._values[1],
+            this._values[2],
+            this._values[3],
+        ];
+    }
+
+    set xyzw(values: [number, number, number, number]) {
+        this._values[0] = values[0];
+        this._values[1] = values[1];
+        this._values[2] = values[2];
+        this._values[3] = values[3];
+    }
+
+    /**
+     * Get an identity quaternion (rotation by 0 degrees)
+     * @return A new identity quaternion
+     */
+    static identity(): Quat {
+        return new Quat([0, 0, 0, 1]);
+    }
+
+    /**
+     * Get a quaternion value at a specific index
+     * @param index Index from 0 to 3
+     * @return The value at the specified index
+     */
+    at(index: number): number {
+        return this._values[index];
+    }
+
+    /**
+     * Reset all quaternion values to 0
+     */
+    reset(): void {
+        for (let i = 0; i < 4; i++) {
+            this._values[i] = 0;
+        }
+    }
+
+    /**
+     * Copy the quaternion to another quaternion
+     * @param dest Destination quaternion (optional)
+     * @return The destination quaternion
+     */
     copy(dest?: Quat): Quat {
         if (!dest) { dest = new Quat(); }
 
         for (let i = 0; i < 4; i++) {
-            dest.values[i] = this.values[i];
+            dest._values[i] = this._values[i];
         }
 
         return dest;
     }
 
+    /**
+     * Calculate the roll angle (rotation around x-axis)
+     * @return Roll angle in radians
+     */
     roll(): number {
         const x = this.x;
         const y = this.y;
@@ -122,6 +161,10 @@ export default class Quat {
         return Math.atan2(2.0 * (x * y + w * z), w * w + x * x - y * y - z * z);
     }
 
+    /**
+     * Calculate the pitch angle (rotation around y-axis)
+     * @return Pitch angle in radians
+     */
     pitch(): number {
         const x = this.x;
         const y = this.y;
@@ -131,13 +174,23 @@ export default class Quat {
         return Math.atan2(2.0 * (y * z + w * x), w * w - x * x - y * y + z * z);
     }
 
+    /**
+     * Calculate the yaw angle (rotation around z-axis)
+     * @return Yaw angle in radians
+     */
     yaw(): number {
         return Math.asin(2.0 * (this.x * this.z - this.w * this.y));
     }
 
-    equals(vector: Quat, threshold = EPSILON): boolean {
+    /**
+     * Check if two quaternions are equal within a threshold
+     * @param quat The quaternion to compare against
+     * @param threshold The threshold for comparison (default: EPSILON)
+     * @return True if quaternions are equal within threshold
+     */
+    equals(quat: Quat, threshold = EPSILON): boolean {
         for (let i = 0; i < 4; i++) {
-            if (Math.abs(this.values[i] - vector.at(i)) > threshold) {
+            if (Math.abs(this._values[i] - quat.at(i)) > threshold) {
                 return false;
             }
         }
@@ -145,6 +198,10 @@ export default class Quat {
         return true;
     }
 
+    /**
+     * Set the quaternion as an identity quaternion
+     * @return This quaternion for method chaining
+     */
     setIdentity(): Quat {
         this.x = 0;
         this.y = 0;
@@ -154,6 +211,10 @@ export default class Quat {
         return this;
     }
 
+    /**
+     * Calculate the w component based on x, y, z components
+     * @return This quaternion for method chaining
+     */
     calculateW(): Quat {
         const x = this.x;
         const y = this.y;
@@ -164,6 +225,10 @@ export default class Quat {
         return this;
     }
 
+    /**
+     * Compute the inverse of the quaternion
+     * @return This quaternion for method chaining
+     */
     inverse(): Quat {
         const dot = Quat.dot(this, this);
 
@@ -183,14 +248,22 @@ export default class Quat {
         return this;
     }
 
+    /**
+     * Compute the conjugate of the quaternion
+     * @return This quaternion for method chaining
+     */
     conjugate(): Quat {
-        this.values[0] *= -1;
-        this.values[1] *= -1;
-        this.values[2] *= -1;
+        this._values[0] *= -1;
+        this._values[1] *= -1;
+        this._values[2] *= -1;
 
         return this;
     }
 
+    /**
+     * Calculate the length (magnitude) of the quaternion
+     * @return The length of the quaternion
+     */
     length(): number {
         const x = this.x;
         const y = this.y;
@@ -200,9 +273,13 @@ export default class Quat {
         return Math.sqrt(x * x + y * y + z * z + w * w);
     }
 
+    /**
+     * Normalize the quaternion to unit length
+     * @param dest Destination quaternion (optional)
+     * @return The normalized quaternion
+     */
     normalize(dest?: Quat): Quat {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        if (!dest) { dest = this; }
+        const target = dest || this;
 
         const x = this.x;
         const y = this.y;
@@ -212,37 +289,47 @@ export default class Quat {
         let length = Math.sqrt(x * x + y * y + z * z + w * w);
 
         if (!length) {
-            dest.x = 0;
-            dest.y = 0;
-            dest.z = 0;
-            dest.w = 0;
+            target.x = 0;
+            target.y = 0;
+            target.z = 0;
+            target.w = 0;
 
-            return dest;
+            return target;
         }
 
         length = 1 / length;
 
-        dest.x = x * length;
-        dest.y = y * length;
-        dest.z = z * length;
-        dest.w = w * length;
+        target.x = x * length;
+        target.y = y * length;
+        target.z = z * length;
+        target.w = w * length;
 
-        return dest;
+        return target;
     }
 
+    /**
+     * Add another quaternion to this quaternion
+     * @param other The quaternion to add
+     * @return This quaternion for method chaining
+     */
     add(other: Quat): Quat {
         for (let i = 0; i < 4; i++) {
-            this.values[i] += other.at(i);
+            this._values[i] += other.at(i);
         }
 
         return this;
     }
 
+    /**
+     * Multiply this quaternion by another quaternion
+     * @param other The quaternion to multiply with
+     * @return This quaternion for method chaining
+     */
     multiply(other: Quat): Quat {
-        const q1x = this.values[0];
-        const q1y = this.values[1];
-        const q1z = this.values[2];
-        const q1w = this.values[3];
+        const q1x = this._values[0];
+        const q1y = this._values[1];
+        const q1z = this._values[2];
+        const q1w = this._values[3];
 
         const q2x = other.x;
         const q2y = other.y;
@@ -257,10 +344,22 @@ export default class Quat {
         return this;
     }
 
+    /**
+     * Calculate the dot product of two quaternions
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @return The dot product
+     */
     static dot(q1: Quat, q2: Quat): number {
         return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
     }
 
+    /**
+     * Calculate the sum of two quaternions
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @return A new quaternion with the sum
+     */
     static sum(q1: Quat, q2: Quat): Quat {
         const dest = new Quat();
 
@@ -272,6 +371,12 @@ export default class Quat {
         return dest;
     }
 
+    /**
+     * Calculate the product of two quaternions
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @return A new quaternion with the product
+     */
     static product(q1: Quat, q2: Quat): Quat {
         const dest = new Quat();
 
@@ -293,6 +398,12 @@ export default class Quat {
         return dest;
     }
 
+    /**
+     * Calculate the cross product of two quaternions
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @return A new quaternion with the cross product
+     */
     static cross(q1: Quat, q2: Quat): Quat {
         const dest = new Quat();
 
@@ -314,6 +425,13 @@ export default class Quat {
         return dest;
     }
 
+    /**
+     * Spherical linear interpolation between two quaternions with short path
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @param time Interpolation parameter (0 to 1)
+     * @return A new interpolated quaternion
+     */
     static shortMix(q1: Quat, q2: Quat, time: number): Quat {
         const dest = new Quat();
 
@@ -359,6 +477,13 @@ export default class Quat {
         return dest;
     }
 
+    /**
+     * Spherical linear interpolation between two quaternions
+     * @param q1 First quaternion
+     * @param q2 Second quaternion
+     * @param time Interpolation parameter (0 to 1)
+     * @return A new interpolated quaternion
+     */
     static mix(q1: Quat, q2: Quat, time: number): Quat {
         const dest = new Quat();
 
@@ -393,6 +518,13 @@ export default class Quat {
         return dest;
     }
 
+    /**
+     * Create a quaternion from an axis and angle
+     * @param axis The rotation axis as a 3D vector
+     * @param angle The rotation angle in radians
+     * @return A new quaternion representing the rotation
+     * @throws Error if the axis vector is not 3D
+     */
     static fromAxisAngle(axis: Vector, angle: number): Quat {
         if (axis.rows !== 3) throw new Error('The axis vector must be in 3D!');
         const dest = new Quat();
@@ -408,4 +540,7 @@ export default class Quat {
         return dest;
     }
 
+    toString(): string {
+        return `[${this._values.join(', ')}]`;
+    }
 }
