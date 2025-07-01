@@ -29,4 +29,4 @@
 
 export { default as Matrix } from './Matrix';
 export { default as Vector } from './Vector';
-export { default as Quat } from './quat';
+export { default as Quat } from './Quat';
