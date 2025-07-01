@@ -1,4 +1,5 @@
 import Matrix from '../src/Matrix';
+import Vector from '../src/Vector';
 
 describe('Matrix class', () => {
   // Most important tests because other tests rely on the reliability of the equals() method.
@@ -368,5 +369,37 @@ describe('Matrix class', () => {
     ]);
   
     expect(matrix.addAColumn().equals(matrixPlusOneCol)).toBeTruthy();
+  });
+
+  describe('multiplyVector', () => {
+    it('should multiply a matrix with a vector', () => {
+      const matrix = new Matrix(2, 3, [
+        [1, 2, 3],
+        [4, 5, 6]
+      ]);
+      const vector = new Vector([2, 1, 3]);
+      
+      const result = matrix.multiplyVector(vector);
+      
+      expect(result.rows).to.equal(2);
+      expect(result.at(0)).to.equal(13); // 1*2 + 2*1 + 3*3 = 2 + 2 + 9 = 13
+      expect(result.at(1)).to.equal(31); // 4*2 + 5*1 + 6*3 = 8 + 5 + 18 = 31
+    });
+
+    it('should throw error when dimensions do not match', () => {
+      const matrix = new Matrix(2, 3); // 2x3 matrix
+      const vector = new Vector([1, 2]); // vector with 2 elements
+      
+      expect(() => matrix.multiplyVector(vector)).toThrowError('Dimension error');
+    });
+
+    it('should work with a 3x3 identity matrix', () => {
+      const identityMatrix = Matrix.identity(3);
+      const vector = new Vector([5, 10, 15]);
+      
+      const result = identityMatrix.multiplyVector(vector);
+      
+      expect(result.equals(vector)).toBeTruthy();
+    });
   });
 });

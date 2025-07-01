@@ -1,3 +1,5 @@
+import Vector from './Vector';
+
 export default class Matrix {
 
     /** Number of rows of the matrix */
@@ -124,6 +126,22 @@ export default class Matrix {
             });
         });
         return resMatrix;
+    }
+
+    /**
+     * Computes the product with a vector
+     * @param vec The vector to multiply with
+     * @throws Error if matrix.columns != vector.rows
+     * @return A new Vector, result of the multiplication
+     */
+    multiplyVector(vec: Vector): Vector {
+        if (this.columns !== vec.rows) throw new Error("Dimension error! The vector must have the same number of elements as the matrix columns!");
+        
+        const resultValues = this.values.map(row => {
+            return row.reduce((sum, element, index) => sum + (element * vec.at(index)), 0);
+        });
+        
+        return new Vector(resultValues);
     }
 
     /**

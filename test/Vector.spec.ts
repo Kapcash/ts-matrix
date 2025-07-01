@@ -1,4 +1,5 @@
 import Vector from '../src/Vector';
+import Matrix from '../src/Matrix';
 
 describe('Vectors.ts', () => {
   it.each([
@@ -240,6 +241,28 @@ describe('Vectors.ts', () => {
     const vectorB = new Vector(inputB);
     const vectorRes = new Vector(expectedResult);
     expect(vectorA.cross(vectorB).equals(vectorRes)).toBeTruthy();
+  });
+
+  it.each([
+    // Test case 1: [1, 2] * [[1, 2], [3, 4]] = [7, 10]
+    // Calculation: [1*1 + 2*3, 1*2 + 2*4] = [1+6, 2+8] = [7, 10]
+    [[1, 2], [[1, 2], [3, 4]], [7, 10]],
+    // Test case 2: [2, 3] * [[1, 0], [0, 1]] = [2, 3] (identity matrix)
+    [[2, 3], [[1, 0], [0, 1]], [2, 3]],
+    // Test case 3: [1, 0, 1] * [[1, 2, 3], [4, 5, 6], [7, 8, 9]] = [8, 10, 12]
+    // Calculation: [1*1 + 0*4 + 1*7, 1*2 + 0*5 + 1*8, 1*3 + 0*6 + 1*9] = [8, 10, 12]
+    [[1, 0, 1], [[1, 2, 3], [4, 5, 6], [7, 8, 9]], [8, 10, 12]],
+  ])('should multiply vector by matrix', (inputVector, inputMatrix, expectedResult) => {
+    const vector = new Vector(inputVector);
+    const matrix = new Matrix(inputMatrix.length, inputMatrix[0].length, inputMatrix);
+    const vectorRes = new Vector(expectedResult);
+    expect(vector.multiplyMatrix(matrix).equals(vectorRes)).toBeTruthy();
+  });
+
+  it('should throw error when vector and matrix dimensions dont match for multiplication', () => {
+    const vector = new Vector([1, 2]); // 2 elements
+    const matrix = new Matrix(3, 2, [[1, 2], [3, 4], [5, 6]]); // 3 rows, 2 columns
+    expect(() => vector.multiplyMatrix(matrix)).toThrow("Dimension error! The vector must have the same number of elements as the matrix rows!");
   });
 
   it.each([
