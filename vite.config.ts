@@ -1,20 +1,23 @@
-/// <reference types="vitest" />
-
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
       entry: path.resolve(__dirname, 'src/ts-matrix.ts'),
-      name: 'ts-matrix',
+      name: 'TsMatrix',
+      formats: ['es', 'umd'],
+      fileName: (format) => `ts-matrix.${format}.js`,
     },
-  },
-  test: {
-    globals: true,
-    coverage: {
-      reporter: ['text'],
+    rollupOptions: {
+      external: [],
+      output: {
+        globals: {},
+      },
     },
   },
 });

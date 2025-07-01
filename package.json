@@ -1,6 +1,6 @@
 {
   "name": "ts-matrix",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "A Vector and Matrix math utility library.",
   "author": "Florent Catiau-Tristant",
   "main": "./dist/ts-matrix.umd.js",
@@ -22,12 +22,13 @@
     "lib"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
-    "@vitest/coverage-c8": "^0.24.3",
-    "eslint": "^8.25.0",
-    "typescript": "^4.8.4",
-    "vite": "^3.1.8",
-    "vitest": "^0.24.3"
+    "@types/node": "^24.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.30.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
   }
 }
