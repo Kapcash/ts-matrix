@@ -13,10 +13,11 @@
   "scripts": {
     "lint": "eslint --fix src/*.ts",
     "build": "tsc --project tsconfig.build.json && vite build",
+    "prepublish": "npm run build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
-  "files:": [
+  "files": [
     "src",
     "dist",
     "lib"
