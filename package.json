@@ -3,6 +3,25 @@
   "version": "1.5.0",
   "description": "A Vector and Matrix math utility library.",
   "author": "Florent Catiau-Tristant",
+  "license": "Zlib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kapcash/ts-matrix.git"
+  },
+  "keywords": [
+    "vector",
+    "matrix",
+    "quaternion",
+    "math",
+    "linear-algebra",
+    "typescript",
+    "3d",
+    "webgl"
+  ],
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "main": "./dist/ts-matrix.umd.js",
   "module": "./dist/ts-matrix.mjs",
   "types": "./lib/ts-matrix.d.ts",
