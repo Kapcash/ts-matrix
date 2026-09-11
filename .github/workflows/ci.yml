@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    name: Lint, test and build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn eslint src/*.ts test/*.ts
+
+      - name: Test
+        run: yarn test:coverage
+
+      - name: Build
+        run: yarn build
+
+      - name: Check package correctness (arethetypeswrong)
+        run: npx --yes @arethetypeswrong/cli@latest --pack . --ignore-rules false-cjs
+
+      - name: Check package correctness (publint)
+        run: npx --yes publint@latest
