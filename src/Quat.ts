@@ -11,11 +11,7 @@ export default class Quat {
 
     constructor(values?: [number, number, number, number]) {
         // Create quaternion with identity by default [0, 0, 0, 1]
-        this._values = [0, 0, 0, 1];
-
-        if (values) {
-            this.xyzw = values;
-        }
+        this._values = values ? [...values] : [0, 0, 0, 1];
     }
 
     get values(): number[] {
@@ -37,32 +33,16 @@ export default class Quat {
         return this._values[0];
     }
 
-    set x(value: number) {
-        this._values[0] = value;
-    }
-
     get y(): number {
         return this._values[1];
-    }
-
-    set y(value: number) {
-        this._values[1] = value;
     }
 
     get z(): number {
         return this._values[2];
     }
 
-    set z(value: number) {
-        this._values[2] = value;
-    }
-    
     get w(): number {
         return this._values[3];
-    }
-    
-    set w(value: number) {
-        this._values[3] = value;
     }
 
     get xy(): [number, number] {
@@ -70,11 +50,6 @@ export default class Quat {
             this._values[0],
             this._values[1],
         ];
-    }
-
-    set xy(values: [number, number]) {
-        this._values[0] = values[0];
-        this._values[1] = values[1];
     }
 
     get xyz(): [number, number, number] {
@@ -85,12 +60,6 @@ export default class Quat {
         ];
     }
 
-    set xyz(values: [number, number, number]) {
-        this._values[0] = values[0];
-        this._values[1] = values[1];
-        this._values[2] = values[2];
-    }
-
     get xyzw(): [number, number, number, number] {
         return [
             this._values[0],
@@ -98,13 +67,6 @@ export default class Quat {
             this._values[2],
             this._values[3],
         ];
-    }
-
-    set xyzw(values: [number, number, number, number]) {
-        this._values[0] = values[0];
-        this._values[1] = values[1];
-        this._values[2] = values[2];
-        this._values[3] = values[3];
     }
 
     /**
@@ -125,27 +87,18 @@ export default class Quat {
     }
 
     /**
-     * Reset all quaternion values to 0
+     * Sets all quaternion values to 0
      */
     reset(): void {
-        for (let i = 0; i < 4; i++) {
-            this._values[i] = 0;
-        }
+        this.values = [0, 0, 0, 0];
     }
 
     /**
-     * Copy the quaternion to another quaternion
-     * @param dest Destination quaternion (optional)
-     * @return The destination quaternion
+     * Get a copy of this quaternion
+     * @return A new quaternion with the same values
      */
-    copy(dest?: Quat): Quat {
-        if (!dest) { dest = new Quat(); }
-
-        for (let i = 0; i < 4; i++) {
-            dest._values[i] = this._values[i];
-        }
-
-        return dest;
+    copy(): Quat {
+        return new Quat(this.xyzw);
     }
 
     /**
@@ -153,10 +106,7 @@ export default class Quat {
      * @return Roll angle in radians
      */
     roll(): number {
-        const x = this.x;
-        const y = this.y;
-        const z = this.z;
-        const w = this.w;
+        const { x, y, z, w } = this;
 
         return Math.atan2(2.0 * (x * y + w * z), w * w + x * x - y * y - z * z);
     }
@@ -166,10 +116,7 @@ export default class Quat {
      * @return Pitch angle in radians
      */
     pitch(): number {
-        const x = this.x;
-        const y = this.y;
-        const z = this.z;
-        const w = this.w;
+        const { x, y, z, w } = this;
 
         return Math.atan2(2.0 * (y * z + w * x), w * w - x * x - y * y + z * z);
     }
@@ -199,65 +146,56 @@ export default class Quat {
     }
 
     /**
-     * Set the quaternion as an identity quaternion
+     * Sets the quaternion as an identity quaternion
      * @return This quaternion for method chaining
      */
     setIdentity(): Quat {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.w = 1;
+        this.values = [0, 0, 0, 1];
 
         return this;
     }
 
     /**
-     * Calculate the w component based on x, y, z components
-     * @return This quaternion for method chaining
+     * Calculate the w component based on x, y, z components.
+     * Note: this always yields a non-positive w (a valid unit quaternion,
+     * on the opposite hemisphere from `Quat.identity()`, due to the sign
+     * convention below).
+     * @return A new quaternion with the computed w component
      */
     calculateW(): Quat {
-        const x = this.x;
-        const y = this.y;
-        const z = this.z;
+        const { x, y, z } = this;
+        const w = -(Math.sqrt(Math.abs(1.0 - x * x - y * y - z * z)));
 
-        this.w = -(Math.sqrt(Math.abs(1.0 - x * x - y * y - z * z)));
-
-        return this;
+        return new Quat([x, y, z, w]);
     }
 
     /**
      * Compute the inverse of the quaternion
-     * @return This quaternion for method chaining
+     * @return A new, inversed quaternion
      */
     inverse(): Quat {
         const dot = Quat.dot(this, this);
 
         if (!dot) {
-            this.xyzw = [0, 0, 0, 0];
-
-            return this;
+            return new Quat([0, 0, 0, 0]);
         }
 
-        const invDot = dot ? 1.0 / dot : 0;
+        const invDot = 1.0 / dot;
 
-        this.x *= -invDot;
-        this.y *= -invDot;
-        this.z *= -invDot;
-        this.w *= invDot;
-
-        return this;
+        return new Quat([
+            this.x * -invDot,
+            this.y * -invDot,
+            this.z * -invDot,
+            this.w * invDot,
+        ]);
     }
 
     /**
      * Compute the conjugate of the quaternion
-     * @return This quaternion for method chaining
+     * @return A new, conjugated quaternion
      */
     conjugate(): Quat {
-        this._values[0] *= -1;
-        this._values[1] *= -1;
-        this._values[2] *= -1;
-
-        return this;
+        return new Quat([-this.x, -this.y, -this.z, this.w]);
     }
 
     /**
@@ -265,83 +203,48 @@ export default class Quat {
      * @return The length of the quaternion
      */
     length(): number {
-        const x = this.x;
-        const y = this.y;
-        const z = this.z;
-        const w = this.w;
+        const { x, y, z, w } = this;
 
         return Math.sqrt(x * x + y * y + z * z + w * w);
     }
 
     /**
-     * Normalize the quaternion to unit length
-     * @param dest Destination quaternion (optional)
-     * @return The normalized quaternion
+     * Computes the normalized quaternion
+     * @return A new, normalized quaternion
      */
-    normalize(dest?: Quat): Quat {
-        const target = dest || this;
-
-        const x = this.x;
-        const y = this.y;
-        const z = this.z;
-        const w = this.w;
-
-        let length = Math.sqrt(x * x + y * y + z * z + w * w);
+    normalize(): Quat {
+        const length = this.length();
 
         if (!length) {
-            target.x = 0;
-            target.y = 0;
-            target.z = 0;
-            target.w = 0;
-
-            return target;
+            return new Quat([0, 0, 0, 0]);
         }
 
-        length = 1 / length;
+        const invLength = 1 / length;
 
-        target.x = x * length;
-        target.y = y * length;
-        target.z = z * length;
-        target.w = w * length;
-
-        return target;
+        return new Quat([
+            this.x * invLength,
+            this.y * invLength,
+            this.z * invLength,
+            this.w * invLength,
+        ]);
     }
 
     /**
      * Add another quaternion to this quaternion
      * @param other The quaternion to add
-     * @return This quaternion for method chaining
+     * @return A new quaternion with the sum
      */
     add(other: Quat): Quat {
-        for (let i = 0; i < 4; i++) {
-            this._values[i] += other.at(i);
-        }
-
-        return this;
+        return Quat.sum(this, other);
     }
 
     /**
      * Multiply this quaternion by another quaternion
      * @param other The quaternion to multiply with
-     * @return This quaternion for method chaining
+     * @return A new quaternion with the product
      */
     multiply(other: Quat): Quat {
-        const q1x = this._values[0];
-        const q1y = this._values[1];
-        const q1z = this._values[2];
-        const q1w = this._values[3];
-
-        const q2x = other.x;
-        const q2y = other.y;
-        const q2z = other.z;
-        const q2w = other.w;
-
-        this.x = q1x * q2w + q1w * q2x + q1y * q2z - q1z * q2y;
-        this.y = q1y * q2w + q1w * q2y + q1z * q2x - q1x * q2z;
-        this.z = q1z * q2w + q1w * q2z + q1x * q2y - q1y * q2x;
-        this.w = q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z;
-
-        return this;
+        return Quat.product(this, other);
     }
 
     /**
@@ -361,14 +264,12 @@ export default class Quat {
      * @return A new quaternion with the sum
      */
     static sum(q1: Quat, q2: Quat): Quat {
-        const dest = new Quat();
-
-        dest.x = q1.x + q2.x;
-        dest.y = q1.y + q2.y;
-        dest.z = q1.z + q2.z;
-        dest.w = q1.w + q2.w;
-
-        return dest;
+        return new Quat([
+            q1.x + q2.x,
+            q1.y + q2.y,
+            q1.z + q2.z,
+            q1.w + q2.w,
+        ]);
     }
 
     /**
@@ -378,8 +279,6 @@ export default class Quat {
      * @return A new quaternion with the product
      */
     static product(q1: Quat, q2: Quat): Quat {
-        const dest = new Quat();
-
         const q1x = q1.x;
         const q1y = q1.y;
         const q1z = q1.z;
@@ -390,12 +289,12 @@ export default class Quat {
         const q2z = q2.z;
         const q2w = q2.w;
 
-        dest.x = q1x * q2w + q1w * q2x + q1y * q2z - q1z * q2y;
-        dest.y = q1y * q2w + q1w * q2y + q1z * q2x - q1x * q2z;
-        dest.z = q1z * q2w + q1w * q2z + q1x * q2y - q1y * q2x;
-        dest.w = q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z;
-
-        return dest;
+        return new Quat([
+            q1x * q2w + q1w * q2x + q1y * q2z - q1z * q2y,
+            q1y * q2w + q1w * q2y + q1z * q2x - q1x * q2z,
+            q1z * q2w + q1w * q2z + q1x * q2y - q1y * q2x,
+            q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z,
+        ]);
     }
 
     /**
@@ -407,14 +306,12 @@ export default class Quat {
      * @return A new quaternion with the cross product
      */
     static cross(q1: Quat, q2: Quat): Quat {
-        const dest = new Quat();
-
-        dest.x = q1.y * q2.z - q1.z * q2.y;
-        dest.y = q1.z * q2.x - q1.x * q2.z;
-        dest.z = q1.x * q2.y - q1.y * q2.x;
-        dest.w = 0;
-
-        return dest;
+        return new Quat([
+            q1.y * q2.z - q1.z * q2.y,
+            q1.z * q2.x - q1.x * q2.z,
+            q1.x * q2.y - q1.y * q2.x,
+            0,
+        ]);
     }
 
     /**
@@ -425,26 +322,20 @@ export default class Quat {
      * @return A new interpolated quaternion
      */
     static shortMix(q1: Quat, q2: Quat, time: number): Quat {
-        const dest = new Quat();
-
         if (time <= 0.0) {
-            dest.xyzw = q1.xyzw;
-
-            return dest;
+            return new Quat(q1.xyzw);
         } else if (time >= 1.0) {
-            dest.xyzw = q2.xyzw;
-
-            return dest;
+            return new Quat(q2.xyzw);
         }
 
         let cos = Quat.dot(q1, q2);
-        const q2a = q2.copy();
+        let q2a = q2;
 
         if (cos < 0.0) {
             // Negate all 4 components (not just xyz, as Quat#inverse would) to
             // flip q2a to the equivalent rotation on the other side of the
             // hypersphere, which is what actually shortens the path.
-            q2a.xyzw = [-q2a.x, -q2a.y, -q2a.z, -q2a.w];
+            q2a = new Quat([-q2.x, -q2.y, -q2.z, -q2.w]);
             cos = -cos;
         }
 
@@ -464,12 +355,12 @@ export default class Quat {
             k1 = Math.sin((0 + time) * angle) * oneOverSin;
         }
 
-        dest.x = k0 * q1.x + k1 * q2a.x;
-        dest.y = k0 * q1.y + k1 * q2a.y;
-        dest.z = k0 * q1.z + k1 * q2a.z;
-        dest.w = k0 * q1.w + k1 * q2a.w;
-
-        return dest;
+        return new Quat([
+            k0 * q1.x + k1 * q2a.x,
+            k0 * q1.y + k1 * q2a.y,
+            k0 * q1.z + k1 * q2a.z,
+            k0 * q1.w + k1 * q2a.w,
+        ]);
     }
 
     /**
@@ -480,37 +371,33 @@ export default class Quat {
      * @return A new interpolated quaternion
      */
     static mix(q1: Quat, q2: Quat, time: number): Quat {
-        const dest = new Quat();
-
         const cosHalfTheta = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
 
         if (Math.abs(cosHalfTheta) >= 1.0) {
-            dest.xyzw = q1.xyzw;
-
-            return dest;
+            return new Quat(q1.xyzw);
         }
 
         const halfTheta = Math.acos(cosHalfTheta);
         const sinHalfTheta = Math.sqrt(1.0 - cosHalfTheta * cosHalfTheta);
 
         if (Math.abs(sinHalfTheta) < 0.001) {
-            dest.x = q1.x * 0.5 + q2.x * 0.5;
-            dest.y = q1.y * 0.5 + q2.y * 0.5;
-            dest.z = q1.z * 0.5 + q2.z * 0.5;
-            dest.w = q1.w * 0.5 + q2.w * 0.5;
-
-            return dest;
+            return new Quat([
+                q1.x * 0.5 + q2.x * 0.5,
+                q1.y * 0.5 + q2.y * 0.5,
+                q1.z * 0.5 + q2.z * 0.5,
+                q1.w * 0.5 + q2.w * 0.5,
+            ]);
         }
 
         const ratioA = Math.sin((1 - time) * halfTheta) / sinHalfTheta;
         const ratioB = Math.sin(time * halfTheta) / sinHalfTheta;
 
-        dest.x = q1.x * ratioA + q2.x * ratioB;
-        dest.y = q1.y * ratioA + q2.y * ratioB;
-        dest.z = q1.z * ratioA + q2.z * ratioB;
-        dest.w = q1.w * ratioA + q2.w * ratioB;
-
-        return dest;
+        return new Quat([
+            q1.x * ratioA + q2.x * ratioB,
+            q1.y * ratioA + q2.y * ratioB,
+            q1.z * ratioA + q2.z * ratioB,
+            q1.w * ratioA + q2.w * ratioB,
+        ]);
     }
 
     /**
@@ -522,17 +409,16 @@ export default class Quat {
      */
     static fromAxisAngle(axis: Vector, angle: number): Quat {
         if (axis.rows !== 3) throw new Error('The axis vector must be in 3D!');
-        const dest = new Quat();
 
-        angle *= 0.5;
-        const sin = Math.sin(angle);
+        const halfAngle = angle * 0.5;
+        const sin = Math.sin(halfAngle);
 
-        dest.x = axis.at(0) * sin;
-        dest.y = axis.at(1) * sin;
-        dest.z = axis.at(2) * sin;
-        dest.w = Math.cos(angle);
-
-        return dest;
+        return new Quat([
+            axis.at(0) * sin,
+            axis.at(1) * sin,
+            axis.at(2) * sin,
+            Math.cos(halfAngle),
+        ]);
     }
 
     toString(): string {

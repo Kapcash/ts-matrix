@@ -33,7 +33,7 @@ describe('Quat.ts', () => {
     expect(q1.equals(q3)).toBeFalsy();
   });
 
-  it('adds', () => {
+  it('adds without mutating the operands', () => {
     const q1 = new Quat([1.0, 2.0, 3.0, 4.0]);
     const q2 = new Quat([2.0, 3.0, 4.0, 5.0]);
 
@@ -43,9 +43,11 @@ describe('Quat.ts', () => {
     expect(result.y).toBeCloseTo(5.0, EPSILON);
     expect(result.z).toBeCloseTo(7.0, EPSILON);
     expect(result.w).toBeCloseTo(9.0, EPSILON);
+    expect(q1.xyzw).toEqual([1.0, 2.0, 3.0, 4.0]);
+    expect(q2.xyzw).toEqual([2.0, 3.0, 4.0, 5.0]);
   });
 
-  it('multiplies', () => {
+  it('multiplies without mutating the operands', () => {
     const q1 = new Quat([1.0, 3.0, 4.0, 5.0]);
     const q2 = new Quat([5.0, 6.0, 7.0, 8.0]);
 
@@ -55,17 +57,20 @@ describe('Quat.ts', () => {
     expect(result.y).toBeCloseTo(67.0, EPSILON);
     expect(result.z).toBeCloseTo(58.0, EPSILON);
     expect(result.w).toBeCloseTo(-11.0, EPSILON);
+    expect(q1.xyzw).toEqual([1.0, 3.0, 4.0, 5.0]);
+    expect(q2.xyzw).toEqual([5.0, 6.0, 7.0, 8.0]);
   });
 
-  it('normalizes', () => {
+  it('normalizes without mutating the receiver', () => {
     const quaternion = new Quat([1.0, 2.0, 3.0, 4.0]);
 
-    quaternion.normalize();
+    const normalized = quaternion.normalize();
 
-    expect(quaternion.x).toBeCloseTo(0.18257, EPSILON);
-    expect(quaternion.y).toBeCloseTo(0.36515, EPSILON);
-    expect(quaternion.z).toBeCloseTo(0.54772, EPSILON);
-    expect(quaternion.w).toBeCloseTo(0.73029, EPSILON);
+    expect(normalized.x).toBeCloseTo(0.18257, EPSILON);
+    expect(normalized.y).toBeCloseTo(0.36515, EPSILON);
+    expect(normalized.z).toBeCloseTo(0.54772, EPSILON);
+    expect(normalized.w).toBeCloseTo(0.73029, EPSILON);
+    expect(quaternion.xyzw).toEqual([1.0, 2.0, 3.0, 4.0]);
   });
 
   it('computes the cross product matching the vector cross product for pure quaternions', () => {
