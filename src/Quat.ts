@@ -441,7 +441,10 @@ export default class Quat {
         const q2a = q2.copy();
 
         if (cos < 0.0) {
-            q2a.inverse();
+            // Negate all 4 components (not just xyz, as Quat#inverse would) to
+            // flip q2a to the equivalent rotation on the other side of the
+            // hypersphere, which is what actually shortens the path.
+            q2a.xyzw = [-q2a.x, -q2a.y, -q2a.z, -q2a.w];
             cos = -cos;
         }
 

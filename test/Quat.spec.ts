@@ -81,4 +81,14 @@ describe('Quat.ts', () => {
     expect(result.w).toBe(0);
   });
 
+  it('shortMix always returns a unit quaternion, even across the shortest path', () => {
+    const q1 = Quat.identity();
+    // 270 degrees around Z: dot(q1, q2) < 0, forcing the shortest-path branch
+    const q2 = Quat.fromAxisAngle(new Vector([0, 0, 1]), 1.5 * Math.PI);
+
+    const mid = Quat.shortMix(q1, q2, 0.5);
+
+    expect(mid.length()).toBeCloseTo(1.0, EPSILON);
+  });
+
 });
