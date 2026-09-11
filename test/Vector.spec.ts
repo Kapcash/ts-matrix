@@ -224,6 +224,11 @@ describe('Vectors.ts', () => {
     expect(vectorA.normalize().equals(vectorRes)).toBeTruthy();
   });
 
+  it('should normalize a zero-length vector to a zero vector instead of NaN', () => {
+    const vector = new Vector([0, 0, 0]);
+    expect(vector.normalize().equals(new Vector([0, 0, 0]))).toBeTruthy();
+  });
+
   it.each([
     [[1, 2, 3], [1, 5, 7], 32],
     [[-1, -2, 3], [4, 0, -8], -28],

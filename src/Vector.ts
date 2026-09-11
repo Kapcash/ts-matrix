@@ -232,10 +232,11 @@ export default class Vector {
 
     /**
      * Computes the normalized vector
-     * @return The normalized vector
+     * @return The normalized vector, or a zero vector if this vector has a length of 0
      */
     normalize(): Vector {
         const vectorLength = this.length();
+        if (!vectorLength) return new Vector(this.values.map(() => 0));
         return this.operateOnAllValues((val) => val / vectorLength);
     }
 

@@ -29,6 +29,24 @@ describe('Matrix class', () => {
     });
   });
 
+  describe('values', () => {
+    it('should crop values assigned to a smaller matrix', () => {
+      const matrix = new Matrix(2, 2);
+      matrix.values = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
+      expect(matrix.equals(new Matrix(2, 2, [[1, 2], [4, 5]]))).toBeTruthy();
+    });
+
+    it('should not throw when assigned an empty array', () => {
+      const matrix = new Matrix(2, 2, [[1, 2], [3, 4]]);
+      expect(() => { matrix.values = []; }).not.toThrow();
+      expect(matrix.equals(new Matrix(2, 2, [[1, 2], [3, 4]]))).toBeTruthy();
+    });
+  });
+
   describe('multiply', () => {
     it.each([
       [

@@ -37,6 +37,7 @@ export default class Matrix {
      * @param newValues Arrays of new values.
      */
     set values(newValues: number[][]) {
+        if (newValues.length === 0) return;
         const minRow = Math.min(newValues.length, this.rows);
         const minCol = Math.min(newValues[0].length, this.columns);
         for (let r = 0; r < minRow; r++) {
