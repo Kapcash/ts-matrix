@@ -114,6 +114,46 @@ export default class Matrix {
     }
 
     /**
+     * Add all matrix values with the same position value of the operand matrix
+     * @param mat The operand matrix
+     * @throws Error if the two matrices don't have the same dimensions
+     * @return A new Matrix with the result values
+     */
+    add(mat: Matrix): Matrix {
+        if (this.rows !== mat.rows || this.columns !== mat.columns) throw new Error("Dimension error! Both matrices must have the same dimensions!");
+        return this.operateOnAllValues((val, i, j) => val + mat.at(i, j));
+    }
+
+    /**
+     * Subtract all matrix values with the same position value of the operand matrix
+     * @param mat The operand matrix
+     * @throws Error if the two matrices don't have the same dimensions
+     * @return A new Matrix with the result values
+     */
+    subtract(mat: Matrix): Matrix {
+        if (this.rows !== mat.rows || this.columns !== mat.columns) throw new Error("Dimension error! Both matrices must have the same dimensions!");
+        return this.operateOnAllValues((val, i, j) => val - mat.at(i, j));
+    }
+
+    /**
+     * Multiply all matrix values by the given number
+     * @param scale The number to multiply with the values
+     * @return A new Matrix with the result values
+     */
+    scale(scale: number): Matrix {
+        return this.operateOnAllValues((val) => val * scale);
+    }
+
+    /**
+     * Run a function on all matrix values, as a map.
+     * @param operation The mapping method
+     * @return a new Matrix with the operation done on all its values
+     */
+    private operateOnAllValues(operation: (val: number, row: number, col: number) => number): Matrix {
+        return new Matrix(this.rows, this.columns, this.values.map((row, i) => row.map((val, j) => operation(val, i, j))));
+    }
+
+    /**
      * Computes the product with another matrix
      * @param mat The second operand matrix
      * @throws Error if matrixA.columns != matrixB.rows

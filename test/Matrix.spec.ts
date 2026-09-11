@@ -55,6 +55,54 @@ describe('Matrix class', () => {
     });
   });
 
+  describe('add', () => {
+    it('should add two matrices without mutating the operands', () => {
+      const matrixA = new Matrix(2, 2, [[1, 2], [3, 4]]);
+      const matrixB = new Matrix(2, 2, [[5, 6], [7, 8]]);
+
+      const result = matrixA.add(matrixB);
+
+      expect(result.equals(new Matrix(2, 2, [[6, 8], [10, 12]]))).toBeTruthy();
+      expect(matrixA.equals(new Matrix(2, 2, [[1, 2], [3, 4]]))).toBeTruthy();
+      expect(matrixB.equals(new Matrix(2, 2, [[5, 6], [7, 8]]))).toBeTruthy();
+    });
+
+    it('should throw on mismatched dimensions', () => {
+      const matrixA = new Matrix(2, 2);
+      const matrixB = new Matrix(3, 2);
+      expect(() => matrixA.add(matrixB)).toThrow();
+    });
+  });
+
+  describe('subtract', () => {
+    it('should subtract two matrices without mutating the operands', () => {
+      const matrixA = new Matrix(2, 2, [[5, 6], [7, 8]]);
+      const matrixB = new Matrix(2, 2, [[1, 2], [3, 4]]);
+
+      const result = matrixA.subtract(matrixB);
+
+      expect(result.equals(new Matrix(2, 2, [[4, 4], [4, 4]]))).toBeTruthy();
+      expect(matrixA.equals(new Matrix(2, 2, [[5, 6], [7, 8]]))).toBeTruthy();
+    });
+
+    it('should throw on mismatched dimensions', () => {
+      const matrixA = new Matrix(2, 2);
+      const matrixB = new Matrix(2, 3);
+      expect(() => matrixA.subtract(matrixB)).toThrow();
+    });
+  });
+
+  describe('scale', () => {
+    it('should scale a matrix without mutating the receiver', () => {
+      const matrix = new Matrix(2, 2, [[1, 2], [3, 4]]);
+
+      const result = matrix.scale(2);
+
+      expect(result.equals(new Matrix(2, 2, [[2, 4], [6, 8]]))).toBeTruthy();
+      expect(matrix.equals(new Matrix(2, 2, [[1, 2], [3, 4]]))).toBeTruthy();
+    });
+  });
+
   describe('multiply', () => {
     it.each([
       [
