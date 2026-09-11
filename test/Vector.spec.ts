@@ -53,6 +53,16 @@ describe('Vectors.ts', () => {
     expect(vector.equals(new Vector([1, 2]))).toBeTruthy();
   });
 
+  it('should copy a vector independently from the original', () => {
+    const vector = new Vector([1, 2, 3]);
+
+    const copy = vector.copy();
+    copy.values = [9, 9, 9];
+
+    expect(copy.equals(new Vector([9, 9, 9]))).toBeTruthy();
+    expect(vector.equals(new Vector([1, 2, 3]))).toBeTruthy();
+  });
+
   it.each([
     [[2, 3], 4 + 9],
     [[-2, -3], 4 + 9],

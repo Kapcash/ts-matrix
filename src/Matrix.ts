@@ -64,6 +64,27 @@ export default class Matrix {
     }
 
     /**
+     * Get a copy of this matrix
+     * @return A new matrix with the same values
+     */
+    copy(): Matrix {
+        return new Matrix(this.rows, this.columns, this.values);
+    }
+
+    /**
+     * Computes the trace of the matrix, i.e. the sum of its diagonal values
+     * @throws Error if the matrix is not squared
+     */
+    trace(): number {
+        if (this.rows !== this.columns) throw new Error("Dimension error! The matrix isn't squared!");
+        let sum = 0;
+        for (let i = 0; i < this.rows; i++) {
+            sum += this.at(i, i);
+        }
+        return sum;
+    }
+
+    /**
      * Add an new column to the matrix, filled with 0
      */
     addAColumn(): Matrix {

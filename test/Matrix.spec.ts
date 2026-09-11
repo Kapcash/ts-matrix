@@ -55,6 +55,34 @@ describe('Matrix class', () => {
     });
   });
 
+  describe('copy', () => {
+    it('should copy a matrix independently from the original', () => {
+      const matrix = new Matrix(2, 2, [[1, 2], [3, 4]]);
+
+      const copy = matrix.copy();
+      copy.values = [[9, 9], [9, 9]];
+
+      expect(copy.equals(new Matrix(2, 2, [[9, 9], [9, 9]]))).toBeTruthy();
+      expect(matrix.equals(new Matrix(2, 2, [[1, 2], [3, 4]]))).toBeTruthy();
+    });
+  });
+
+  describe('trace', () => {
+    it('should sum the diagonal values', () => {
+      const matrix = new Matrix(3, 3, [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ]);
+      expect(matrix.trace()).toBe(1 + 5 + 9);
+    });
+
+    it('should throw on a non-squared matrix', () => {
+      const matrix = new Matrix(2, 3);
+      expect(() => matrix.trace()).toThrow();
+    });
+  });
+
   describe('add', () => {
     it('should add two matrices without mutating the operands', () => {
       const matrixA = new Matrix(2, 2, [[1, 2], [3, 4]]);

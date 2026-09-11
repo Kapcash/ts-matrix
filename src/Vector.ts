@@ -91,6 +91,14 @@ export default class Vector {
     }
 
     /**
+     * Get a copy of this vector
+     * @return A new vector with the same values
+     */
+    copy(): Vector {
+        return new Vector(this.values);
+    }
+
+    /**
      * Check if two vectors are equals, value by value
      * @param vec The vector against to check equality
      * @param threshold The maximum allowed difference between two values to still be considered equal (default: 0, i.e. exact equality)
