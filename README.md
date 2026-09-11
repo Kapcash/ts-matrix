@@ -56,7 +56,8 @@ Instance methods
 | indexOf(value: number) | Returns the index of the value within the Vector, or -1 if it's not found. |
 | reset() | Sets all vector values to 0, in place |
 | addAValue() | Add a new 0 to the Vector. Returns a new instance. |
-| equals(vector: Vector) | Checks equality between two vectors |
+| copy() | Returns a new vector with the same values |
+| equals(vector: Vector, threshold?: number) | Checks equality between two vectors, optionally within a threshold (default: 0, i.e. exact equality) |
 | negate() | Negates the Vector (change all cells arithmetic sign). Returns a new instance. |
 | length() | Returns the vectors length |
 | squaredLength() | Returns the vectors squared length |
@@ -98,16 +99,21 @@ Instance methods
 | values | Returns matrix values as a bi-dimentional array |
 | indexOf(value: number) | Returns the position - as a tuple - of the value within the Matrix, or [-1, -1] if it's not found. |
 | reset()         | Sets all matrix values to 0, in place |
+| copy()          | Returns a new matrix with the same values |
 | addAColumn()    | Add a new empty column to the Matrix. Returns a new instance. |
 | addARow()       | Add a new empty row to the Matrix. Returns a new instance. |
-| equals(matrix: Matrix)          | Checks equality between two matrices |
+| equals(matrix: Matrix, threshold?: number)          | Checks equality between two matrices, optionally within a threshold (default: 0, i.e. exact equality) |
 | setAsIdentity() | Fills a squared matrix with the identity values (diagonal 1), in place |
+| add(matrix: Matrix)      | Adds two matrices. Both must have the same dimensions. Returns a new instance. |
+| subtract(matrix: Matrix) | Subtracts two matrices. Both must have the same dimensions. Returns a new instance. |
+| scale(scale: number)     | Multiply all matrix values by the given scale. Returns a new instance. |
 | multiply(matrix: Matrix)        | Multiply two matrices. Returns a new instance. |
 | multiplyVector(vector: Vector)  | Computes the product of this matrix with a vector. Returns a new instance. |
 | determinant()     | Compute the determinant of the matrix. |
+| trace()           | Compute the sum of the diagonal values. Throws if the matrix isn't squared. |
 | getCofactor(row: number, col: number)     | Compute the cofactor of the matrix. Returns a new instance. |
 | transpose()       | Transpose the matrix. Returns a new instance. |
-| inverse()         | Inverse the matrix. Returns a new instance. |
+| inverse()         | Inverse the matrix. Returns a new instance. Throws if the matrix isn't squared, or is singular. |
 | min() | Returns the lowest value from the Matrix |
 | max() | Returns the highest value from the Matrix |
 | round() | Rounds all matrix values to the nearest integer |
@@ -118,6 +124,7 @@ Static methods
 | method | description |
 |--------|-------------|
 | identity(dimension: number) | Returns a new squared identity Matrix |
+| fromArray(values: number[], rows: number, columns: number) | Builds a new Matrix from a flat, row-major array of values |
 
 ---------------------------------------------------------------------------------------
 
