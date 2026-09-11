@@ -1,4 +1,5 @@
 import Quat from '../src/Quat';
+import Vector from '../src/Vector';
 
 import { EPSILON } from '../src/constants';
 
@@ -65,6 +66,19 @@ describe('Quat.ts', () => {
     expect(quaternion.y).toBeCloseTo(0.36515, EPSILON);
     expect(quaternion.z).toBeCloseTo(0.54772, EPSILON);
     expect(quaternion.w).toBeCloseTo(0.73029, EPSILON);
+  });
+
+  it('computes the cross product matching the vector cross product for pure quaternions', () => {
+    const q1 = new Quat([1, 2, 3, 0]);
+    const q2 = new Quat([4, 5, 6, 0]);
+    const expected = new Vector([1, 2, 3]).cross(new Vector([4, 5, 6]));
+
+    const result = Quat.cross(q1, q2);
+
+    expect(result.x).toBeCloseTo(expected.at(0), EPSILON);
+    expect(result.y).toBeCloseTo(expected.at(1), EPSILON);
+    expect(result.z).toBeCloseTo(expected.at(2), EPSILON);
+    expect(result.w).toBe(0);
   });
 
 });

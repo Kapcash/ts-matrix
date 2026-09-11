@@ -399,7 +399,9 @@ export default class Quat {
     }
 
     /**
-     * Calculate the cross product of two quaternions
+     * Calculate the cross product of two quaternions, i.e. (q1 * q2 - q2 * q1) / 2.
+     * For quaternions with a 0 w component, this is equivalent to the cross
+     * product of their [x, y, z] vector parts.
      * @param q1 First quaternion
      * @param q2 Second quaternion
      * @return A new quaternion with the cross product
@@ -407,20 +409,10 @@ export default class Quat {
     static cross(q1: Quat, q2: Quat): Quat {
         const dest = new Quat();
 
-        const q1x = q1.x;
-        const q1y = q1.y;
-        const q1z = q1.z;
-        const q1w = q1.w;
-
-        const q2x = q2.x;
-        const q2y = q2.y;
-        const q2z = q2.z;
-        const q2w = q2.w;
-
-        dest.x = q1w * q2z + q1z * q2w + q1x * q2y - q1y * q2x;
-        dest.y = q1w * q2w - q1x * q2x - q1y * q2y - q1z * q2z;
-        dest.z = q1w * q2x + q1x * q2w + q1y * q2z - q1z * q2y;
-        dest.w = q1w * q2y + q1y * q2w + q1z * q2x - q1x * q2z;
+        dest.x = q1.y * q2.z - q1.z * q2.y;
+        dest.y = q1.z * q2.x - q1.x * q2.z;
+        dest.z = q1.x * q2.y - q1.y * q2.x;
+        dest.w = 0;
 
         return dest;
     }
