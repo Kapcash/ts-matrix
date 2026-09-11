@@ -55,7 +55,7 @@ Instance methods
 | values | Returns Vector values as an array |
 | indexOf(value: number) | Returns the index of the value within the Vector, or -1 if it's not found. |
 | reset() | Sets all vector values to 0, in place |
-| addAValue() | Add a new 0 to the Vector. Returns a new instance. |
+| addValues(count?: number) | Add zero values to the Vector (default: 1). Returns a new instance. |
 | copy() | Returns a new vector with the same values |
 | equals(vector: Vector, threshold?: number) | Checks equality between two vectors, optionally within a threshold (default: 0, i.e. exact equality) |
 | negate() | Negates the Vector (change all cells arithmetic sign). Returns a new instance. |
@@ -71,8 +71,8 @@ Instance methods
 | dot(vector: Vector) | Computes the dot product between two Vectors. |
 | cross(vector: Vector) | Computes the cross product between two Vectors. Returns new instance |
 | mix(vector: Vector, time: number) | Computes the mix product between two Vectors. Returns new instance |
-| angleFrom(vector: Vector) | Returns the angle between two Vectors between 0 and +π inclusive |
-| distanceFrom(vector: Vector) | Returns the distance (absolute value) between two Vectors |
+| angle(vector: Vector) | Returns the angle between two Vectors between 0 and +π inclusive |
+| distance(vector: Vector) | Returns the distance (absolute value) between two Vectors |
 | min() | Returns the lowest value from the Vector |
 | max() | Returns the highest value from the Vector |
 | round() | Rounds all vector values to the nearest integer |
@@ -83,7 +83,7 @@ Static methods
 
 | method | description |
 |--------|-------------|
-| get360angle(VectorA: Vector, VectorB: Vector) | Compute the angle between two Vectors. Both vectors must be of dimension 3 exactly. The returned angle is signed, thus -180º < angle < 180º |
+| signedAngle(VectorA: Vector, VectorB: Vector) | Compute the signed angle in radians between two 3D Vectors, in the range -π to +π |
 
 ---------------------------------------------------------------------------------------
 
@@ -100,10 +100,10 @@ Instance methods
 | indexOf(value: number) | Returns the position - as a tuple - of the value within the Matrix, or [-1, -1] if it's not found. |
 | reset()         | Sets all matrix values to 0, in place |
 | copy()          | Returns a new matrix with the same values |
-| addAColumn()    | Add a new empty column to the Matrix. Returns a new instance. |
-| addARow()       | Add a new empty row to the Matrix. Returns a new instance. |
+| addColumns(count?: number) | Add empty columns to the Matrix (default: 1). Returns a new instance. |
+| addRows(count?: number) | Add empty rows to the Matrix (default: 1). Returns a new instance. |
 | equals(matrix: Matrix, threshold?: number)          | Checks equality between two matrices, optionally within a threshold (default: 0, i.e. exact equality) |
-| setAsIdentity() | Fills a squared matrix with the identity values (diagonal 1), in place |
+| setIdentity() | Fills a squared matrix with the identity values (diagonal 1), in place |
 | add(matrix: Matrix)      | Adds two matrices. Both must have the same dimensions. Returns a new instance. |
 | subtract(matrix: Matrix) | Subtracts two matrices. Both must have the same dimensions. Returns a new instance. |
 | scale(scale: number)     | Multiply all matrix values by the given scale. Returns a new instance. |
@@ -111,7 +111,7 @@ Instance methods
 | multiplyVector(vector: Vector)  | Computes the product of this matrix with a vector. Returns a new instance. |
 | determinant()     | Compute the determinant of the matrix. |
 | trace()           | Compute the sum of the diagonal values. Throws if the matrix isn't squared. |
-| getCofactor(row: number, col: number)     | Compute the cofactor of the matrix. Returns a new instance. |
+| cofactor(row: number, col: number)     | Compute the cofactor of the matrix. Returns a new instance. |
 | transpose()       | Transpose the matrix. Returns a new instance. |
 | inverse()         | Inverse the matrix. Returns a new instance. Throws if the matrix isn't squared, or is singular. |
 | min() | Returns the lowest value from the Matrix |

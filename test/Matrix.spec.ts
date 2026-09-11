@@ -373,7 +373,7 @@ describe('Matrix class', () => {
     });
   
     it('should throw error on non-squared matrix', () => {
-      expect(() => new Matrix(2, 1).setAsIdentity()).toThrowError('Dimension error');
+      expect(() => new Matrix(2, 1).setIdentity()).toThrowError('Dimension error');
     });
   });
 
@@ -388,7 +388,7 @@ describe('Matrix class', () => {
     });
   });
 
-  describe('getCofactor', () => {
+  describe('cofactor', () => {
     it('should remove the given row and column', () => {
       const matrix = new Matrix(3, 3, [
         [1, 2, 3],
@@ -396,7 +396,7 @@ describe('Matrix class', () => {
         [7, 8, 9],
       ]);
 
-      const cofactor = matrix.getCofactor(1, 1);
+      const cofactor = matrix.cofactor(1, 1);
 
       expect(cofactor.equals(new Matrix(2, 2, [[1, 3], [7, 9]]))).toBeTruthy();
     });
@@ -497,7 +497,7 @@ describe('Matrix class', () => {
     });
   });
   
-  it('add a row', () => {
+  it('adds rows without mutating the receiver', () => {
     const matrix = new Matrix(3, 3, [
       [1, 2, 3],
       [4, 5, 6],
@@ -511,10 +511,15 @@ describe('Matrix class', () => {
       [0, 0, 0],
     ]);
   
-    expect(matrix.addARow().equals(matrixPlusOneRow)).toBeTruthy();
+    expect(matrix.addRows().equals(matrixPlusOneRow)).toBeTruthy();
+    expect(matrix.equals(new Matrix(3, 3, [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]))).toBeTruthy();
   });
   
-  it('add a column', () => {
+  it('adds columns without mutating the receiver', () => {
     const matrix = new Matrix(3, 3, [
       [1, 2, 3],
       [4, 5, 6],
@@ -527,7 +532,40 @@ describe('Matrix class', () => {
       [7, 8, 9, 0],
     ]);
   
-    expect(matrix.addAColumn().equals(matrixPlusOneCol)).toBeTruthy();
+    expect(matrix.addColumns().equals(matrixPlusOneCol)).toBeTruthy();
+    expect(matrix.equals(new Matrix(3, 3, [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]))).toBeTruthy();
+  });
+
+  it('adds multiple rows and columns', () => {
+    const matrix = new Matrix(2, 2, [[1, 2], [3, 4]]);
+
+    expect(matrix.addRows(2).equals(new Matrix(4, 2, [
+      [1, 2], [3, 4], [0, 0], [0, 0],
+    ]))).toBeTruthy();
+    expect(matrix.addColumns(2).equals(new Matrix(2, 4, [
+      [1, 2, 0, 0], [3, 4, 0, 0],
+    ]))).toBeTruthy();
+  });
+
+  it('returns a copy when adding zero rows or columns', () => {
+    const matrix = new Matrix(2, 2, [[1, 2], [3, 4]]);
+
+    expect(matrix.addRows(0)).not.toBe(matrix);
+    expect(matrix.addColumns(0)).not.toBe(matrix);
+    expect(matrix.addRows(0).equals(matrix)).toBeTruthy();
+    expect(matrix.addColumns(0).equals(matrix)).toBeTruthy();
+  });
+
+  it.each([-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])('rejects an invalid row count: %s', (count) => {
+    expect(() => new Matrix(2, 2).addRows(count)).toThrow();
+  });
+
+  it.each([-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])('rejects an invalid column count: %s', (count) => {
+    expect(() => new Matrix(2, 2).addColumns(count)).toThrow();
   });
 
   describe('multiplyVector', () => {

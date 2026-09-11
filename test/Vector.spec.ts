@@ -43,14 +43,30 @@ describe('Vectors.ts', () => {
     expect(vector.negate().equals(expectedVector)).toBeTruthy();
   });
 
-  it('should add a value without mutating the receiver', () => {
+  it('should add values without mutating the receiver', () => {
     const vector = new Vector([1, 2]);
 
-    const result = vector.addAValue();
+    const result = vector.addValues();
 
     expect(result.equals(new Vector([1, 2, 0]))).toBeTruthy();
     expect(vector.rows).toBe(2);
     expect(vector.equals(new Vector([1, 2]))).toBeTruthy();
+  });
+
+  it('should add multiple values', () => {
+    expect(new Vector([1, 2]).addValues(2).equals(new Vector([1, 2, 0, 0]))).toBeTruthy();
+  });
+
+  it('should return a copy when adding zero values', () => {
+    const vector = new Vector([1, 2]);
+    const result = vector.addValues(0);
+
+    expect(result).not.toBe(vector);
+    expect(result.equals(vector)).toBeTruthy();
+  });
+
+  it.each([-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])('should reject an invalid value count: %s', (count) => {
+    expect(() => new Vector([1, 2]).addValues(count)).toThrow();
   });
 
   it('should copy a vector independently from the original', () => {
@@ -106,14 +122,18 @@ describe('Vectors.ts', () => {
       const vectorB = new Vector(inputB);
 
       if (!expectedResult) {
-        expect(() => vectorA.angleFrom(vectorB)).toThrowError();
+        expect(() => vectorA.angle(vectorB)).toThrowError();
       } else {
-        const angle = vectorA.angleFrom(vectorB);
+        const angle = vectorA.angle(vectorB);
         const toThousands = (num: number) => Math.round(num * 1000) / 1000;
         expect(toThousands(angle)).eq(toThousands(expectedResult));
       }
     }
   );
+
+  it('should calculate a signed angle for 3D vectors', () => {
+    expect(Vector.signedAngle(new Vector([1, 0, 0]), new Vector([0, 1, 0]))).toBeCloseTo(Math.PI / 2);
+  });
   
   it.each([
   [[1, 2, 3], [4, 5, 6], 5.196152422706632],
@@ -127,9 +147,9 @@ describe('Vectors.ts', () => {
       const vectorB = new Vector(inputB);
 
       if (!expectedResult) {
-        expect(() => vectorA.distanceFrom(vectorB)).toThrowError();
+        expect(() => vectorA.distance(vectorB)).toThrowError();
       } else {
-        const distance = vectorA.distanceFrom(vectorB);
+        const distance = vectorA.distance(vectorB);
         const toThousands = (num: number) => Math.round(num * 1000) / 1000;
         expect(toThousands(distance)).eq(toThousands(expectedResult));
       }

@@ -36,11 +36,11 @@ export default class Vector {
     }
 
     /**
-     * Calculates the angle in radians between vector and the receiver.
+     * Calculates the angle in radians between the vector and the receiver.
      * @param vector The operand vector
      * @return An angle, between 0 and +π inclusive.
      */
-    angleFrom(vector: Vector): number {
+    angle(vector: Vector): number {
       if (this.rows !== vector.rows) throw new Error('To calculate the angle, vectors must have the same dimension!');
       const dot = this.dot(vector);
       const cos = dot / (this.length() * vector.length());
@@ -48,12 +48,12 @@ export default class Vector {
     }
 
     /**
-     * Calculates the distance between vector and the receiver.
+     * Calculates the distance between the vector and the receiver.
      * Equivalent to |receiver - vector|
      * @param vector The operand vector
      * @return The distance (absolute value) between the two vectors
      */  
-    distanceFrom(vector: Vector): number {
+    distance(vector: Vector): number {
       if(this.rows !== vector.rows) throw new Error('To calculate the distance, vectors must have the same dimension!');
       return this.subtract(vector).length();
     }
@@ -83,11 +83,15 @@ export default class Vector {
     }
 
     /**
-     * Get a new vector with an extra 0 appended to it
+    * Get a new vector with extra 0 values appended to it
+    * @param count Number of values to add (default: 1)
      * @return A new, larger Vector
      */
-    addAValue(): Vector {
-        return new Vector([...this.values, 0]);
+    addValues(count = 1): Vector {
+        if (!Number.isInteger(count) || count < 0) {
+            throw new Error('Dimension error! Value count must be a non-negative integer.');
+        }
+        return new Vector([...this.values, ...new Array<number>(count).fill(0)]);
     }
 
     /**
@@ -274,7 +278,13 @@ export default class Vector {
         return new Vector(this.values.map((val, i) => val + time * (vector.at(i) - val)));
     }
 
-    static get360angle(Va: Vector, Vb: Vector) {
+    /**
+     * Calculates the signed angle in radians between two 3D vectors.
+     * @param Va First vector
+     * @param Vb Second vector
+     * @return A signed angle between -π and +π
+     */
+    static signedAngle(Va: Vector, Vb: Vector) {
         if (Va.rows !== 3 || Vb.rows !== 3) throw new Error('Vectors must be in 3D!. You can add a 1 dimension if it is missing.');
         return -Math.atan2(
           Vb.cross(Va).dot(new Vector([0, 0, 1]).normalize()),

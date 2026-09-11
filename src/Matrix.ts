@@ -85,17 +85,25 @@ export default class Matrix {
     }
 
     /**
-     * Add an new column to the matrix, filled with 0
+    * Add new columns to the matrix, filled with 0
+    * @param count Number of columns to add (default: 1)
      */
-    addAColumn(): Matrix {
-        return new Matrix(this.rows, this.columns + 1, this.values);
+    addColumns(count = 1): Matrix {
+        if (!Number.isInteger(count) || count < 0) {
+            throw new Error('Dimension error! Column count must be a non-negative integer.');
+        }
+        return new Matrix(this.rows, this.columns + count, this.values);
     }
 
     /**
-     * Add an new row to the matrix, filled with 0
+    * Add new rows to the matrix, filled with 0
+    * @param count Number of rows to add (default: 1)
      */
-    addARow(): Matrix {
-        return new Matrix(this.rows + 1, this.columns, this.values);
+    addRows(count = 1): Matrix {
+        if (!Number.isInteger(count) || count < 0) {
+            throw new Error('Dimension error! Row count must be a non-negative integer.');
+        }
+        return new Matrix(this.rows + count, this.columns, this.values);
     }
 
     /**
@@ -115,7 +123,7 @@ export default class Matrix {
     /**
      * Sets the matrix as an identity matrix
      */
-    setAsIdentity() {
+    setIdentity() {
         if (this.rows !== this.columns) throw new Error("Dimension error! The matrix isn't squared!");
         this.values.forEach((row, i) => {
             row.forEach((c, j) => {
@@ -131,7 +139,7 @@ export default class Matrix {
      */
     static identity(dimension: number): Matrix {
         if (dimension < 1) throw Error('Dimension error! Matrix dimension must be positive.');
-        return new Matrix(dimension, dimension).setAsIdentity();
+        return new Matrix(dimension, dimension).setIdentity();
     }
 
     /**
@@ -309,12 +317,12 @@ export default class Matrix {
     }
 
     /**
-     * Gets a cofactor matrix
+    * Gets a cofactor matrix
      * @param row The row to omit in the matrix
      * @param col The column to omit in the matrix
      * @return The cofactor matrix sized (r-1)x(c-1)
      */
-    getCofactor(row: number, col: number): Matrix {
+    cofactor(row: number, col: number): Matrix {
         return new Matrix(this.rows - 1, this.columns - 1, this.values
             .filter((v, i) => i !== row) // Remove the unnecessary row
             .map((c) => c.filter((v, i) => i !== col)));
