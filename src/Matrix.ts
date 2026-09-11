@@ -135,6 +135,25 @@ export default class Matrix {
     }
 
     /**
+     * Builds a matrix from a flat, row-major array of values
+     * @param values Flat array of values, read row by row
+     * @param rows Number of rows
+     * @param columns Number of columns
+     * @throws Error if values.length !== rows * columns
+     * @return A new Matrix built from the given values
+     */
+    static fromArray(values: number[], rows: number, columns: number): Matrix {
+        if (values.length !== rows * columns) throw new Error(`Dimension error! Expected ${rows * columns} values for a ${rows}x${columns} matrix, got ${values.length}.`);
+
+        const rowMajorValues = new Array<number[]>(rows);
+        for (let i = 0; i < rows; i++) {
+            rowMajorValues[i] = values.slice(i * columns, (i + 1) * columns);
+        }
+
+        return new Matrix(rows, columns, rowMajorValues);
+    }
+
+    /**
      * Add all matrix values with the same position value of the operand matrix
      * @param mat The operand matrix
      * @throws Error if the two matrices don't have the same dimensions

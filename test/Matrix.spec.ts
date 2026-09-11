@@ -377,6 +377,17 @@ describe('Matrix class', () => {
     });
   });
 
+  describe('fromArray', () => {
+    it('should build a matrix from a flat, row-major array', () => {
+      const matrix = Matrix.fromArray([1, 2, 3, 4, 5, 6], 2, 3);
+      expect(matrix.equals(new Matrix(2, 3, [[1, 2, 3], [4, 5, 6]]))).toBeTruthy();
+    });
+
+    it('should throw when the array length does not match rows * columns', () => {
+      expect(() => Matrix.fromArray([1, 2, 3], 2, 2)).toThrowError('Dimension error');
+    });
+  });
+
   describe('getCofactor', () => {
     it('should remove the given row and column', () => {
       const matrix = new Matrix(3, 3, [
