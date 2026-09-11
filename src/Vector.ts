@@ -83,11 +83,11 @@ export default class Vector {
     }
 
     /**
-     * Add an new row to the matrix, filled with 0
+     * Get a new vector with an extra 0 appended to it
+     * @return A new, larger Vector
      */
     addAValue(): Vector {
-        this.values.push(0);
-        return new Vector(this.values);
+        return new Vector([...this.values, 0]);
     }
 
     /**

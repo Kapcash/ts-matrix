@@ -35,6 +35,16 @@ describe('Vectors.ts', () => {
     expect(vector.negate().equals(expectedVector)).toBeTruthy();
   });
 
+  it('should add a value without mutating the receiver', () => {
+    const vector = new Vector([1, 2]);
+
+    const result = vector.addAValue();
+
+    expect(result.equals(new Vector([1, 2, 0]))).toBeTruthy();
+    expect(vector.rows).toBe(2);
+    expect(vector.equals(new Vector([1, 2]))).toBeTruthy();
+  });
+
   it.each([
     [[2, 3], 4 + 9],
     [[-2, -3], 4 + 9],
