@@ -41,7 +41,8 @@
   "typings": "lib/ts-matrix.d.ts",
   "scripts": {
     "lint": "eslint --fix src/*.ts test/*.ts",
-    "build": "tsc --project tsconfig.build.json && vite build",
+    "clean": "rm -rf dist; rm -rf lib",
+    "build": "npm run clean && tsc --project tsconfig.build.json && vite build",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
