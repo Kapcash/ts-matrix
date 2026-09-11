@@ -18,9 +18,9 @@ export default defineConfig({
         '**/*.test.ts',
         '**/*.spec.ts',
         '**/*.d.ts',
-        '**/vite.config.ts',
-        '**/vitest.config.ts',
-        '**/.eslintrc.js',
+        '**/vite.config.mts',
+        '**/vitest.config.mts',
+        '**/eslint.config.js',
         '**/tsconfig*.json',
         'src/ts-matrix.ts', // Main export file - just re-exports, no logic to test
       ],
