@@ -22,6 +22,14 @@ describe('Vectors.ts', () => {
     expect(vectorA.equals(vectorB)).eq(expectedEquality);
   });
 
+  it('should check vectors equality within a threshold', () => {
+    const vectorA = new Vector([1, 2]);
+    const vectorB = new Vector([1.001, 2]);
+
+    expect(vectorA.equals(vectorB)).toBeFalsy();
+    expect(vectorA.equals(vectorB, 0.01)).toBeTruthy();
+  });
+
   it.each([
     [[1, 2, 3], [-1, -2, -3]],
     [[-1, -2, -3], [1, 2, 3]],

@@ -80,13 +80,14 @@ export default class Matrix {
     /**
      * Check if two matrix are equals, value by value
      * @param mat The matrix against to check equality
+     * @param threshold The maximum allowed difference between two values to still be considered equal (default: 0, i.e. exact equality)
      */
-    equals(mat: Matrix): boolean {
+    equals(mat: Matrix, threshold = 0): boolean {
         // Reduce on rows -> reduce on columns -> if a value != then false!
         return (this.rows === mat.rows && this.columns === mat.columns)
             && this.values.reduce(// Rows
                 (eql: boolean, row, i) => eql && row.reduce(// Columns (real values)
-                        (eql2: boolean, val, j) => eql2 && mat.at(i, j) === val, eql)
+                        (eql2: boolean, val, j) => eql2 && Math.abs(mat.at(i, j) - val) <= threshold, eql)
                 , true);
     }
 

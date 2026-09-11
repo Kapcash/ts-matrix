@@ -91,12 +91,13 @@ export default class Vector {
     }
 
     /**
-     * Check if two matrix are equals, value by value
-     * @param mat The matrix against to check equality
+     * Check if two vectors are equals, value by value
+     * @param vec The vector against to check equality
+     * @param threshold The maximum allowed difference between two values to still be considered equal (default: 0, i.e. exact equality)
      */
-    equals(vec: Vector): boolean {
+    equals(vec: Vector, threshold = 0): boolean {
         return (this.rows === vec.rows)
-            && this.values.reduce((eql: boolean, val, i) => eql && vec.at(i) === val, true);
+            && this.values.reduce((eql: boolean, val, i) => eql && Math.abs(vec.at(i) - val) <= threshold, true);
     }
 
     /**

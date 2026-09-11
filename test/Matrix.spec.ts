@@ -27,6 +27,14 @@ describe('Matrix class', () => {
       ]);
       expect(matrixA.equals(matrixB)).toBeFalsy();
     });
+
+    it('should check matrix equality within a threshold', () => {
+      const matrixA = new Matrix(2, 2, [[1, 2], [2, 3]]);
+      const matrixB = new Matrix(2, 2, [[1.001, 2], [2, 3]]);
+
+      expect(matrixA.equals(matrixB)).toBeFalsy();
+      expect(matrixA.equals(matrixB, 0.01)).toBeTruthy();
+    });
   });
 
   describe('values', () => {
