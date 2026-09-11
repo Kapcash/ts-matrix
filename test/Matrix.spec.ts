@@ -340,8 +340,27 @@ describe('Matrix class', () => {
     it('should error on non-squared matrix', () => {
       expect(() => new Matrix(2, 4).determinant()).toThrowError('squared');
     });
+
+    it('should return 0 for a singular matrix', () => {
+      const matrix = new Matrix(3, 3, [
+        [1, 2, 3],
+        [2, 4, 6],
+        [7, 8, 9],
+      ]);
+      expect(matrix.determinant()).toBe(0);
+    });
+
+    it('should stay fast for larger matrices (was O(n!) via cofactor expansion)', () => {
+      const n = 12;
+      const matrix = new Matrix(n, n, Array.from({ length: n }, (_, i) =>
+        Array.from({ length: n }, (_, j) => ((i * n + j) % 7) + 1)));
+
+      const start = performance.now();
+      matrix.determinant();
+      expect(performance.now() - start).toBeLessThan(50);
+    });
   });
-  
+
   describe('identity', () => {
     // Bad test since we use a similar algorithm than the function ifself to check if it works... What can *prove* us this double loop is correct?
     it.each([1, 2, 3, 4, 5, 15])('should generate identity matrix', (dimension) => {
@@ -355,6 +374,20 @@ describe('Matrix class', () => {
   
     it('should throw error on non-squared matrix', () => {
       expect(() => new Matrix(2, 1).setAsIdentity()).toThrowError('Dimension error');
+    });
+  });
+
+  describe('getCofactor', () => {
+    it('should remove the given row and column', () => {
+      const matrix = new Matrix(3, 3, [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ]);
+
+      const cofactor = matrix.getCofactor(1, 1);
+
+      expect(cofactor.equals(new Matrix(2, 2, [[1, 3], [7, 9]]))).toBeTruthy();
     });
   });
 
@@ -385,6 +418,19 @@ describe('Matrix class', () => {
   });
   
   describe('inverse', () => {
+    it('should throw on a singular (non-invertible) matrix', () => {
+      const matrix = new Matrix(3, 3, [
+        [1, 2, 3],
+        [2, 4, 6],
+        [7, 8, 9],
+      ]);
+      expect(() => matrix.inverse()).toThrowError("Determinant is 0, can't compute inverse.");
+    });
+
+    it('should throw on a non-squared matrix', () => {
+      expect(() => new Matrix(2, 3).inverse()).toThrowError('squared');
+    });
+
     it.each([
       [
         [[1, 2, 3],

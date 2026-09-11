@@ -248,24 +248,44 @@ export default class Matrix {
     }
 
     /**
-     * Computes the determinant of the matrix
+     * Computes the determinant of the matrix via LU decomposition with partial
+     * pivoting, in O(n^3) instead of the O(n!) of a cofactor expansion.
      * @throws Error if the matrix is not squared
      */
     determinant(): number {
         if (this.rows !== this.columns) throw new Error("Dimension error! The matrix isn't squared!");
-        if (this.rows === this.columns && this.columns === 1) { return this.values[0][0]; }
 
-        let det = 0;
+        const n = this.rows;
+        const a = this.values.map((row) => [...row]);
         let sign = 1;
-        if (this.rows === 2) {
-            det = this.values[0][0] * this.values[1][1] - this.values[1][0] * this.values[0][1];
-        } else {
-            for (let i = 0; i < this.rows; i++) {
-                const minor = this.getCofactor(0, i);
-                det += sign * this.at(0, i) * minor.determinant();
+
+        for (let k = 0; k < n; k++) {
+            let pivotRow = k;
+            let maxAbs = Math.abs(a[k][k]);
+            for (let i = k + 1; i < n; i++) {
+                if (Math.abs(a[i][k]) > maxAbs) {
+                    maxAbs = Math.abs(a[i][k]);
+                    pivotRow = i;
+                }
+            }
+            // No non-zero pivot left in this column: the matrix is singular.
+            if (maxAbs === 0) return 0;
+
+            if (pivotRow !== k) {
+                [a[k], a[pivotRow]] = [a[pivotRow], a[k]];
                 sign = -sign;
             }
+
+            for (let i = k + 1; i < n; i++) {
+                const factor = a[i][k] / a[k][k];
+                for (let j = k; j < n; j++) {
+                    a[i][j] -= factor * a[k][j];
+                }
+            }
         }
+
+        let det = sign;
+        for (let i = 0; i < n; i++) det *= a[i][i];
         return det;
     }
 
@@ -291,25 +311,47 @@ export default class Matrix {
     }
 
     /**
-     * Computes the inversed matrix
+     * Computes the inversed matrix via Gauss-Jordan elimination with partial
+     * pivoting, in O(n^3) instead of the O(n!) of a cofactor/adjugate approach.
      * @return A new matrix inversed
+     * @throws Error if the matrix is not squared, or is singular (not invertible)
      */
-    inverse() {
+    inverse(): Matrix {
         if (this.rows !== this.columns) throw new Error("Dimension error! The matrix isn't squared!");
-        const det = this.determinant();
-        if (det === 0) throw new Error("Determinant is 0, can't compute inverse.");
 
-        // Get cofactor matrix: i.e. for each matrix value, get the cofactor's determinant
-        const cofactorMatrix = new Matrix (this.rows, this.columns,
-            this.values.map((row, i) => row.map((val, j) => {
-                const sign = Math.pow(-1, i + j);
-                return sign * this.getCofactor(i, j).determinant();
-            })));
-        // Transpose it
-        const transposedCofactor = cofactorMatrix.transpose();
-        // Compute inverse of transposed / determinant on each value
-        return new Matrix(this.rows, this.columns,
-            this.values.map((row, i) => row.map((val, j) => transposedCofactor.at(i, j) / det)));
+        const n = this.rows;
+        // Augmented matrix [A | I], reduced in place to [I | A^-1]
+        const a = this.values.map((row, i) => [
+            ...row,
+            ...new Array<number>(n).fill(0).map((_, j) => (i === j ? 1 : 0)),
+        ]);
+
+        for (let k = 0; k < n; k++) {
+            let pivotRow = k;
+            let maxAbs = Math.abs(a[k][k]);
+            for (let i = k + 1; i < n; i++) {
+                if (Math.abs(a[i][k]) > maxAbs) {
+                    maxAbs = Math.abs(a[i][k]);
+                    pivotRow = i;
+                }
+            }
+            if (maxAbs === 0) throw new Error("Determinant is 0, can't compute inverse.");
+
+            if (pivotRow !== k) [a[k], a[pivotRow]] = [a[pivotRow], a[k]];
+
+            const pivot = a[k][k];
+            for (let j = 0; j < 2 * n; j++) a[k][j] /= pivot;
+
+            for (let i = 0; i < n; i++) {
+                if (i === k) continue;
+                const factor = a[i][k];
+                for (let j = 0; j < 2 * n; j++) {
+                    a[i][j] -= factor * a[k][j];
+                }
+            }
+        }
+
+        return new Matrix(n, n, a.map((row) => row.slice(n)));
     }
 
     toString(): string {
